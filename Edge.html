@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常用网站导航</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .add-site-form {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .add-site-form input, .add-site-form select, .add-site-form button {
+            padding: 12px;
+            margin-right: 10px;
+            width: 180px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .add-site-form button {
+            background-color: #007941;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        .add-site-form button:hover {
+            background-color: #007941;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .category {
+            margin-bottom: 40px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .category h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #00796b;
+        }
+        .category:nth-child(2) h2 {
+            color: #1976D2;
+        }
+        .category:nth-child(3) h2 {
+            color: #D32F2F;
+        }
+        .category:nth-child(4) h2 {
+            color: #FBC02D;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        ul li {
+            flex: 1 1 calc(33.333% - 30px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        ul li:hover {
+            background-color: #e0f7fa;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        ul li a {
+            color: #00796b;
+            text-decoration: none;
+            font-weight: 500;
+            flex-grow: 1;
+            word-break: break-word;
+        }
+        ul li a:hover {
+            text-decoration: underline;
+        }
+        ul li button {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            display: none;
+        }
+        .show-delete ul li button {
+            display: block;
+        }
+        .toggle-delete {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-delete:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>常用网站导航</h1>
+</header>
+
+<!-- 表单用于添加网站，并选择分类 -->
+<div class="add-site-form">
+    <input type="text" id="site-name" placeholder="网站名称">
+    <input type="url" id="site-url" placeholder="网站链接">
+    <select id="site-category">
+        <option value="category1">工作</option>
+        <option value="category2">学习</option>
+        <option value="category3">娱乐</option>
+        <option value="category4">工具</option>
+    </select>
+    <button onclick="addSite()">添加网站</button>
+    <button class="toggle-delete" onclick="toggleDelete()">删除网站</button>
+</div>
+
+<main>
+    <div class="category" id="category1">
+        <h2>工作</h2>
+        <ul id="category1-list"></ul>
+    </div>
+    <div class="category" id="category4">
+        <h2>工具</h2>
+        <ul id="category4-list"></ul>
+    </div>
+    <div class="category" id="category2">
+        <h2>学习</h2>
+        <ul id="category2-list"></ul>
+    </div>
+    <div class="category" id="category3">
+        <h2>娱乐</h2>
+        <ul id="category3-list"></ul>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadSites);
+
+    function toggleDelete() {
+        var main = document.querySelector('main');
+        main.classList.toggle('show-delete');
+        
+        var button = document.querySelector('.toggle-delete');
+        if (main.classList.contains('show-delete')) {
+            button.textContent = "完成";
+        } else {
+            button.textContent = "删除网站";
+        }
+    }
+
+    function addSite() {
+        var siteName = document.getElementById("site-name").value;
+        var siteUrl = document.getElementById("site-url").value;
+        var siteCategory = document.getElementById("site-category").value;
+
+        if (siteName === "" || siteUrl === "") {
+            alert("请填写网站名称和链接");
+            return;
+        }
+
+        var li = createListItem(siteName, siteUrl);
+        document.getElementById(siteCategory + "-list").appendChild(li);
+
+        saveSite(siteCategory, siteName, siteUrl);
+
+        document.getElementById("site-name").value = "";
+        document.getElementById("site-url").value = "";
+    }
+
+    function deleteSite(button) {
+        var li = button.parentElement;
+        var category = li.parentElement.id.replace("-list", "");
+        var siteName = li.querySelector('a').textContent;
+        li.remove();
+
+        removeSite(category, siteName);
+    }
+
+    function createListItem(siteName, siteUrl) {
+        var li = document.createElement("li");
+
+        // 创建图标
+        var img = document.createElement("img");
+        img.src = getFavicon(siteUrl); // 获取 favicon
+        img.alt = "网站图标";
+        img.style.width = "24px"; // 设置图标大小
+        img.style.height = "24px";
+        img.style.marginRight = "10px";
+
+        // 如果获取不到图标，则隐藏 img
+        img.onerror = function() {
+            img.style.display = 'none'; // 隐藏图标
+        };
+        // 创建链接
+        var a = document.createElement("a");
+        a.textContent = siteName;
+        a.href = siteUrl;
+        a.target = "_blank"; // 新窗口打开链接
+
+        // 删除按钮
+        var deleteButton = document.createElement("button");
+        deleteButton.textContent = "删除";
+        deleteButton.onclick = function() {
+            deleteSite(deleteButton);
+        };
+
+        li.appendChild(img); // 添加图标到 li
+        li.appendChild(a);   // 添加链接到 li
+        li.appendChild(deleteButton); // 添加删除按钮到 li
+        return li;
+    }
+
+    function getFavicon(siteUrl) {
+        try {
+            // 从 URL 中提取域名
+            var url = new URL(siteUrl);
+                // 如果是特定的网站，返回特定的图标
+            if (url.hostname.includes('feishu.cn')) {
+                return "https://www.feishu.cn/favicon.ico";
+            }
+            if (url.hostname.includes('haier')) {
+                return "https://www.haier.com/favicon.ico";
+            }
+            if (url.hostname.includes('lightly.teamcode.com')) {
+                return "https://lightly.teamcode.com/assets/logo.3daf54a7.svg";
+            }
+            // 默认情况下，许多网站的 favicon 在 /favicon.ico 路径
+            return url.origin + "/favicon.ico";
+        } catch (e) {
+            // 如果解析 URL 失败，返回一个默认图标
+            return "default-icon.png";
+        }
+    }
+
+    function saveSite(category, siteName, siteUrl) {
+        var sites = JSON.parse(localStorage.getItem(category)) || [];
+        sites.push({ name: siteName, url: siteUrl });
+        localStorage.setItem(category, JSON.stringify(sites));
+    }
+
+    function removeSite(category, siteName) {
+        var sites = JSON.parse(localStorage.getItem(category)) || [];
+        sites = sites.filter(site => site.name !== siteName);
+        localStorage.setItem(category, JSON.stringify(sites));
+    }
+
+    function loadSites() {       
+        // 默认网站数据
+        const defaultData = {
+  "category1": [
+    {
+      "name": "iHaier",
+      "url": "https://ihaier.feishu.cn/messenger/"
+    },
+    {
+      "name": "绩效填报",
+      "url": "https://hritnew.haier.net/views/index.html"
+    },
+    {
+      "name": "立创商城",
+      "url": "https://www.szlcsc.com/"
+    },
+    {
+      "name": "Biolink智慧物联云平台",
+      "url": "https://nbiolink.haierbiomedical.com/index.html"
+    }
+  ],
+  "category2": [
+    {
+      "name": "CSDN",
+      "url": "https://www.csdn.net/?spm=1001.2101.3001.4476"
+    },
+    {
+      "name": "RT-Thread 文档中心",
+      "url": "https://www.rt-thread.org/document/site/#/"
+    },
+    {
+      "name": "知乎",
+      "url": "https://www.zhihu.com/"
+    },
+    {
+      "name": "中国知网",
+      "url": "https://www.cnki.net/"
+    }
+  ],
+  "category3": [
+    {
+      "name": "抖音",
+      "url": "https://www.douyin.com/"
+    },
+    {
+      "name": "BiliBili",
+      "url": "https://www.bilibili.com/"
+    },
+    {
+      "name": "腾讯视频",
+      "url": "https://v.qq.com/"
+    },
+    {
+      "name": "爱奇艺",
+      "url": "https://www.iqiyi.com/"
+    },
+    {
+      "name": "优酷",
+      "url": "https://youku.com/"
+    },
+    {
+      "name": "芒果TV",
+      "url": "https://www.mgtv.com/"
+    }
+  ],
+  "category4": [
+    {
+      "name": "TOOL",
+      "url": "https://ebcv8ivvf0.feishu.cn/docx/doxcnVTOtYhw5ms7RyN9v5LMSNe"
+    },
+    {
+      "name": "Lightly",
+      "url": "https://lightly.teamcode.com/dashboard"
+    },
+    {
+      "name": "MD5在线加密",
+      "url": "https://md5jiami.bmcx.com/"
+    },
+    {
+      "name": "百度",
+      "url": "https://www.baidu.com/"
+    },
+    {
+      "name": "草料二维码",
+      "url": "https://cli.im/"
+    },
+    {
+      "name": "PDF转换",
+      "url": "https://tools.pdf24.org/zh"
+    },
+    {
+      "name": "百度翻译",
+      "url": "https://fanyi.baidu.com/#zh/en/"
+    },
+    {
+      "name": "有道云笔记",
+      "url": "https://note.youdao.com/"
+    },
+    {
+      "name": "必应搜索",
+      "url": "https://www.bing.com/"
+    },
+    {
+      "name": "阿里图标库",
+      "url": "https://www.iconfont.cn/"
+    }
+  ]
+};
+
+        // 检查 localStorage 中是否有保存的网站数据，如果没有则使用默认数据
+        ['category1', 'category2', 'category3', 'category4'].forEach(category => {
+            var sites = JSON.parse(localStorage.getItem(category)) || defaultData[category];
+            var list = document.getElementById(category + "-list");
+            sites.forEach(site => {
+                var li = createListItem(site.name, site.url);
+                list.appendChild(li);
+            });
+        });
+    }
+    //function exportData() {
+    // const data = {};
+    //     ['category1', 'category2', 'category3', 'category4'].forEach(category => {
+    //         data[category] = JSON.parse(localStorage.getItem(category)) || [];
+    //     });
+    //     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    //     const url = URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = 'websites.json';
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     document.body.removeChild(a);
+    // }
+    //exportData();
+
+</script>
+
+</body>
+</html>
