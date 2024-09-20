@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fireworks Display</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #fireworks-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="fireworks-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.min.js"></script>
+    <script>
+        // 初始化烟花效果
+        const container = document.getElementById('fireworks-container');
+        const fireworks = new Fireworks.default(container, {
+            speed: 2,
+            acceleration: 1.05,
+            particles: 150,
+            explosion: 5,
+            intensity: 30,
+            traceLength: 3,
+            traceSpeed: 10,
+            flickering: 50,
+            hue: { min: 0, max: 360 },
+            sound: {
+                enable: false // 禁用声音
+            }
+        });
+
+        fireworks.start();
+    </script>
+</body>
+</html>
